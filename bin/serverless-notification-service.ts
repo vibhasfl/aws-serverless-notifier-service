@@ -10,6 +10,8 @@ const myStack = new ServerlessNotificationServiceStack(
   `notifier-${process.env.DEPLOYMENT_ENV}`,
   {
     stackName: `notifier-${process.env.DEPLOYMENT_ENV}`,
+    projectName: `notifier`,
+    deploymentStage: `${process.env.DEPLOYMENT_ENV}`,
     description: `Serverless Notification stack to send SMS/EMAIL`,
     env: {
       region: `${process.env.DEPLOYMENT_REGION}`,
