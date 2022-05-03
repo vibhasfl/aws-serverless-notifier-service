@@ -9,10 +9,11 @@ import * as cdk from 'aws-cdk-lib/core';
 import { HttpMethod } from 'aws-cdk-lib/aws-events';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 export class ServerlessNotificationServiceStack extends Stack {
-  public readonly projectName: any;
-  public readonly deploymentStage: any;
+  public projectName: any;
+  public deploymentStage: any;
 
   constructor(scope: Construct, id: string, props?: CustomStackProps) {
     super(scope, id, props);
@@ -25,6 +26,18 @@ export class ServerlessNotificationServiceStack extends Stack {
     const prmtlSqsQueue = this.createPrmtlSqsQueue();
     const txnlProcessorLambda = this.createTxnlProcessorLambdaFn();
     const prmtlProcessorLambda = this.createPrmtlProcessorLambdaFn();
+
+    const gatewayLambdaFnPolicy = new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['sqs:SendMessage'],
+          resources: [txnlSqsQueue.queueArn, prmtlSqsQueue.queueArn],
+        }),
+      ],
+    });
+
+    routerLambdaFn.addEnvironment('txnlSqsQueue', txnlSqsQueue.queueUrl);
+    routerLambdaFn.addEnvironment('prmtlSqsQueue', prmtlSqsQueue.queueUrl);
   }
 
   createRouterLambdaFn(): lambda.Function {
