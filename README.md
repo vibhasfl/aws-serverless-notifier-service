@@ -20,3 +20,15 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 To satisfy all dependencies of this project including tools like typescript compiler and cdk toolkit from local project folder instead of global we would be using npx. [Ref](https://docs.aws.amazon.com/cdk/v2/guide/work-with-cdk-typescript.html)
 
 `npx aws-cdk init --language typescript`
+
+## Setting default AWS profile with appropiate IAM permissions for deployment
+
+`export AWS_DEFAULT_PROFILE="profilename"`
+
+## Create cdk shortcut
+
+`alias cdk="npx aws-cdk"`
+
+## Passing environment variables for deployment
+
+`DEPLOYMENT_REGION=ap-south-1 DEPLOYMENT_ENV=dev cdk deploy`
