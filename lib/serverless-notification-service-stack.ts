@@ -23,6 +23,8 @@ export class ServerlessNotificationServiceStack extends Stack {
     const routerLambdaFn = this.createRouterLambdaFn();
     const txnlSqsQueue = this.createTxnlSqsQueue();
     const prmtlSqsQueue = this.createPrmtlSqsQueue();
+    const txnlProcessorLambda = this.createTxnlProcessorLambdaFn();
+    const prmtlProcessorLambda = this.createPrmtlProcessorLambdaFn();
   }
 
   createRouterLambdaFn(): lambda.Function {
@@ -68,5 +70,29 @@ export class ServerlessNotificationServiceStack extends Stack {
     });
 
     return txnlSqsQueue;
+  }
+
+  createTxnlProcessorLambdaFn(): lambda.Function {
+    let lambdaObj = new lambda.Function(this, 'txnlprocessor', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('./resources/lambdas/transactional'),
+      memorySize: 128,
+      timeout: cdk.Duration.seconds(10),
+    });
+
+    return lambdaObj;
+  }
+
+  createPrmtlProcessorLambdaFn(): lambda.Function {
+    let lambdaObj = new lambda.Function(this, 'prmtlprocessor', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('./resources/lambdas/promotional'),
+      memorySize: 128,
+      timeout: cdk.Duration.seconds(10),
+    });
+
+    return lambdaObj;
   }
 }
