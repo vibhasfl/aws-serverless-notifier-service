@@ -10,6 +10,8 @@ import { HttpMethod } from 'aws-cdk-lib/aws-events';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
 
 export class ServerlessNotificationServiceStack extends Stack {
   public projectName: any;
@@ -27,17 +29,62 @@ export class ServerlessNotificationServiceStack extends Stack {
     const txnlProcessorLambda = this.createTxnlProcessorLambdaFn();
     const prmtlProcessorLambda = this.createPrmtlProcessorLambdaFn();
 
-    const gatewayLambdaFnPolicy = new iam.PolicyDocument({
+    const emailerS3Bucket = this.createEmailerS3Bucket();
+
+    // Set Router Lambda Permissions
+    const gatewayLambdaFnPolicyDocument = new iam.PolicyDocument({
       statements: [
         new iam.PolicyStatement({
           actions: ['sqs:SendMessage'],
           resources: [txnlSqsQueue.queueArn, prmtlSqsQueue.queueArn],
         }),
+        new iam.PolicyStatement({
+          actions: ['s3:PutObject'],
+          resources: [
+            emailerS3Bucket.bucketArn,
+            `${emailerS3Bucket.bucketArn}/*`,
+          ],
+        }),
       ],
     });
 
+    routerLambdaFn.role?.attachInlinePolicy(
+      new iam.Policy(this, 'sqs_s3', {
+        document: gatewayLambdaFnPolicyDocument,
+        policyName: 'sqs_push_s3_upload',
+      })
+    );
     routerLambdaFn.addEnvironment('txnlSqsQueue', txnlSqsQueue.queueUrl);
     routerLambdaFn.addEnvironment('prmtlSqsQueue', prmtlSqsQueue.queueUrl);
+
+    // Set Processor Lambda Permission
+    const processorLambdaFnPolicyDocument = new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['s3:GetObject', 's3:DeleteObject'],
+          resources: [
+            emailerS3Bucket.bucketArn,
+            `${emailerS3Bucket.bucketArn}/*`,
+          ],
+        }),
+      ],
+    });
+
+    const processorS3Policy = new iam.Policy(this, 's3_get_delete', {
+      document: processorLambdaFnPolicyDocument,
+    });
+
+    txnlProcessorLambda.role?.attachInlinePolicy(processorS3Policy);
+
+    prmtlProcessorLambda.role?.attachInlinePolicy(processorS3Policy);
+
+    txnlProcessorLambda.addEventSource(
+      new eventsources.SqsEventSource(txnlSqsQueue, { batchSize: 1 })
+    );
+
+    prmtlProcessorLambda.addEventSource(
+      new eventsources.SqsEventSource(prmtlSqsQueue, { batchSize: 10 })
+    );
   }
 
   createRouterLambdaFn(): lambda.Function {
@@ -107,5 +154,13 @@ export class ServerlessNotificationServiceStack extends Stack {
     });
 
     return lambdaObj;
+  }
+
+  createEmailerS3Bucket(): s3.Bucket {
+    let s3Bucket = new s3.Bucket(this, 'emailers3', {
+      bucketName: `${this.projectName}-emailer-${this.deploymentStage}`,
+    });
+
+    return s3Bucket;
   }
 }
