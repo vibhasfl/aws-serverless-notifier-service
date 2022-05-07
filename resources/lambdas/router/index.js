@@ -1,5 +1,6 @@
 const aws = require('aws-sdk')
 const sqs = new aws.SQS()
+const s3 = new aws.S3()
 const uuid = require('uuid')
 const crypto = require('crypto')
 
@@ -36,12 +37,14 @@ exports.handler = async function (event, context) {
         }
       }
 
+      payload.mode = 'SMS'
+
       await sqs
         .sendMessage({
           QueueUrl: payload.type === 'TRANSACTIONAL' ? process.env.txnlSqsQueue : process.env.prmtlSqsQueue,
           MessageBody: JSON.stringify(payload),
-          MessageGroupId: payload.type,
-          MessageDeduplicationId: crypto.createHash('md5').update(payload.message).digest('hex')
+          MessageGroupId: payload.type === 'TRANSACTIONAL' ? payload.type : undefined,
+          MessageDeduplicationId: payload.type === 'TRANSACTIONAL' ? crypto.createHash('md5').update(uploadJson.html).digest('hex') : undefined
         })
         .promise()
 
@@ -77,12 +80,14 @@ exports.handler = async function (event, context) {
       delete payload.attachments
       payload.s3FileKey = s3FileKey
 
+      payload.mode = 'EMAIL'
+
       const sqsResp = await sqs
         .sendMessage({
           QueueUrl: payload.type === 'TRANSACTIONAL' ? process.env.txnlSqsQueue : process.env.prmtlSqsQueue,
           MessageBody: JSON.stringify(payload),
-          MessageGroupId: payload.type,
-          MessageDeduplicationId: crypto.createHash('md5').update(uploadJson.html).digest('hex')
+          MessageGroupId: payload.type === 'TRANSACTIONAL' ? payload.type : undefined,
+          MessageDeduplicationId: payload.type === 'TRANSACTIONAL' ? crypto.createHash('md5').update(uploadJson.html).digest('hex') : undefined
         })
         .promise()
 
@@ -94,7 +99,7 @@ exports.handler = async function (event, context) {
     }
   } catch (error) {
     return {
-      statusCode: 400,
+      statusCode: 500,
       headers: { 'content-type': 'text/json' },
       body: JSON.stringify({ message: error.toString() })
     }
