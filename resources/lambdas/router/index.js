@@ -1,8 +1,10 @@
 const aws = require('aws-sdk')
 const sqs = new aws.SQS()
-const s3 = new aws.S3()
+const s3 = new aws.S3({ region: 'ap-south-1' })
 const uuid = require('uuid')
 const crypto = require('crypto')
+
+aws.config.update({ region: 'ap-south-1' })
 
 exports.handler = async function (event, context) {
   console.log(JSON.stringify(event))
@@ -43,8 +45,7 @@ exports.handler = async function (event, context) {
         .sendMessage({
           QueueUrl: payload.type === 'TRANSACTIONAL' ? process.env.txnlSqsQueue : process.env.prmtlSqsQueue,
           MessageBody: JSON.stringify(payload),
-          MessageGroupId: payload.type === 'TRANSACTIONAL' ? payload.type : undefined,
-          MessageDeduplicationId: payload.type === 'TRANSACTIONAL' ? crypto.createHash('md5').update(uploadJson.html).digest('hex') : undefined
+          MessageGroupId: payload.type === 'TRANSACTIONAL' ? payload.type : undefined
         })
         .promise()
 
@@ -86,8 +87,7 @@ exports.handler = async function (event, context) {
         .sendMessage({
           QueueUrl: payload.type === 'TRANSACTIONAL' ? process.env.txnlSqsQueue : process.env.prmtlSqsQueue,
           MessageBody: JSON.stringify(payload),
-          MessageGroupId: payload.type === 'TRANSACTIONAL' ? payload.type : undefined,
-          MessageDeduplicationId: payload.type === 'TRANSACTIONAL' ? crypto.createHash('md5').update(uploadJson.html).digest('hex') : undefined
+          MessageGroupId: payload.type === 'TRANSACTIONAL' ? payload.type : undefined
         })
         .promise()
 
@@ -101,7 +101,7 @@ exports.handler = async function (event, context) {
     return {
       statusCode: 500,
       headers: { 'content-type': 'text/json' },
-      body: JSON.stringify({ message: error.toString() })
+      body: JSON.stringify({ errorMessage: error.toString() })
     }
   }
 }
@@ -163,7 +163,7 @@ const getTotalEmailSize = (payload) => {
 
 const uploadEmailPayloadToS3 = async (payload) => {
   const uploadJson = {
-    html: payload.htmlMailBody,
+    htmlMailBody: payload.htmlMailBody,
     attachments: payload.attachments
   }
   const s3FileKey = uuid.v4()

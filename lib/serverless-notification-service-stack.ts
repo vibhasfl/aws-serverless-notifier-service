@@ -61,6 +61,16 @@ export class ServerlessNotificationServiceStack extends Stack {
       emailerS3Bucket.bucketName
     );
 
+    txnlProcessorLambda.addEnvironment(
+      'emailUploadBucket',
+      emailerS3Bucket.bucketName
+    );
+
+    prmtlProcessorLambda.addEnvironment(
+      'emailUploadBucket',
+      emailerS3Bucket.bucketName
+    );
+
     // Set Processor Lambda Permission
     const processorLambdaFnPolicyDocument = new iam.PolicyDocument({
       statements: [
@@ -82,12 +92,18 @@ export class ServerlessNotificationServiceStack extends Stack {
 
     prmtlProcessorLambda.role?.attachInlinePolicy(processorS3Policy);
 
+    // Ref : https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-eventsource
+
     txnlProcessorLambda.addEventSource(
       new eventsources.SqsEventSource(txnlSqsQueue, { batchSize: 1 })
     );
 
     prmtlProcessorLambda.addEventSource(
-      new eventsources.SqsEventSource(prmtlSqsQueue, { batchSize: 10 })
+      new eventsources.SqsEventSource(prmtlSqsQueue, {
+        batchSize: 5,
+        maxBatchingWindow: cdk.Duration.minutes(1),
+        reportBatchItemFailures: true,
+      })
     );
   }
 
@@ -121,6 +137,7 @@ export class ServerlessNotificationServiceStack extends Stack {
       queueName: `${this.projectName}-txnl-${this.deploymentStage}.fifo`,
       retentionPeriod: cdk.Duration.minutes(5),
       visibilityTimeout: cdk.Duration.seconds(60),
+      contentBasedDeduplication: true,
     });
 
     return txnlSqsQueue;
@@ -154,7 +171,7 @@ export class ServerlessNotificationServiceStack extends Stack {
       handler: 'index.handler',
       code: lambda.Code.fromAsset('./resources/lambdas/promotional'),
       memorySize: 128,
-      timeout: cdk.Duration.seconds(30),
+      timeout: cdk.Duration.seconds(60),
     });
 
     return lambdaObj;
@@ -162,6 +179,8 @@ export class ServerlessNotificationServiceStack extends Stack {
 
   createEmailerS3Bucket(): s3.Bucket {
     let s3Bucket = new s3.Bucket(this, 'emailers3', {
+      publicReadAccess: false,
+      encryption: s3.BucketEncryption.S3_MANAGED,
       // bucketName: `${this.projectName}-emailer-${this.deploymentStage}`,
     });
 

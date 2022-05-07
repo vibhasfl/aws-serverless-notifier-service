@@ -21,7 +21,7 @@ Install cdk
 
 Deploy CDK toolkit stack in your aws environment [Ref](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html)
 
-`cdk bootstrap --profile $awsprofile $aws_account_id/$aws_region`
+`cdk bootstrap --qualifier $randomString --profile $awsprofile $aws_account_id/$aws_region`
 
 ## Creating cdk project
 
