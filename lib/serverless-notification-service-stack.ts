@@ -120,7 +120,7 @@ export class ServerlessNotificationServiceStack extends Stack {
       fifo: true,
       queueName: `${this.projectName}-txnl-${this.deploymentStage}.fifo`,
       retentionPeriod: cdk.Duration.minutes(5),
-      visibilityTimeout: cdk.Duration.seconds(10),
+      visibilityTimeout: cdk.Duration.seconds(60),
     });
 
     return txnlSqsQueue;
@@ -130,7 +130,7 @@ export class ServerlessNotificationServiceStack extends Stack {
     const txnlSqsQueue = new sqs.Queue(this, 'prmtlqueue', {
       queueName: `${this.projectName}-prmtl-${this.deploymentStage}`,
       retentionPeriod: cdk.Duration.days(1),
-      visibilityTimeout: cdk.Duration.minutes(1),
+      visibilityTimeout: cdk.Duration.minutes(3),
     });
 
     return txnlSqsQueue;
@@ -142,7 +142,7 @@ export class ServerlessNotificationServiceStack extends Stack {
       handler: 'index.handler',
       code: lambda.Code.fromAsset('./resources/lambdas/transactional'),
       memorySize: 128,
-      timeout: cdk.Duration.seconds(15),
+      timeout: cdk.Duration.seconds(10),
     });
 
     return lambdaObj;
@@ -154,7 +154,7 @@ export class ServerlessNotificationServiceStack extends Stack {
       handler: 'index.handler',
       code: lambda.Code.fromAsset('./resources/lambdas/promotional'),
       memorySize: 128,
-      timeout: cdk.Duration.seconds(70),
+      timeout: cdk.Duration.seconds(30),
     });
 
     return lambdaObj;
@@ -162,7 +162,7 @@ export class ServerlessNotificationServiceStack extends Stack {
 
   createEmailerS3Bucket(): s3.Bucket {
     let s3Bucket = new s3.Bucket(this, 'emailers3', {
-      bucketName: `${this.projectName}-emailer-${this.deploymentStage}`,
+      // bucketName: `${this.projectName}-emailer-${this.deploymentStage}`,
     });
 
     return s3Bucket;

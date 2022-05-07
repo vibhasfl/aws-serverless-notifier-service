@@ -15,6 +15,14 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 # Getting Started
 
+Install cdk
+
+`npm install -g aws-cdk-lib`
+
+Deploy CDK toolkit stack in your aws environment [Ref](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html)
+
+`cdk bootstrap --profile $awsprofile $aws_account_id/$aws_region`
+
 ## Creating cdk project
 
 To satisfy all dependencies of this project including tools like typescript compiler and cdk toolkit from local project folder instead of global we would be using npx. [Ref](https://docs.aws.amazon.com/cdk/v2/guide/work-with-cdk-typescript.html)

@@ -1,6 +1,7 @@
 const aws = require('aws-sdk')
 const sqs = new aws.SQS()
 const uuid = require('uuid')
+const crypto = require('crypto')
 
 exports.handler = async function (event, context) {
   console.log(JSON.stringify(event))
