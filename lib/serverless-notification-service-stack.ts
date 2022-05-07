@@ -56,6 +56,10 @@ export class ServerlessNotificationServiceStack extends Stack {
     );
     routerLambdaFn.addEnvironment('txnlSqsQueue', txnlSqsQueue.queueUrl);
     routerLambdaFn.addEnvironment('prmtlSqsQueue', prmtlSqsQueue.queueUrl);
+    routerLambdaFn.addEnvironment(
+      'emailUploadBucket',
+      emailerS3Bucket.bucketName
+    );
 
     // Set Processor Lambda Permission
     const processorLambdaFnPolicyDocument = new iam.PolicyDocument({
@@ -116,7 +120,7 @@ export class ServerlessNotificationServiceStack extends Stack {
       fifo: true,
       queueName: `${this.projectName}-txnl-${this.deploymentStage}.fifo`,
       retentionPeriod: cdk.Duration.minutes(5),
-      visibilityTimeout: cdk.Duration.seconds(30),
+      visibilityTimeout: cdk.Duration.seconds(10),
     });
 
     return txnlSqsQueue;
@@ -126,7 +130,7 @@ export class ServerlessNotificationServiceStack extends Stack {
     const txnlSqsQueue = new sqs.Queue(this, 'prmtlqueue', {
       queueName: `${this.projectName}-prmtl-${this.deploymentStage}`,
       retentionPeriod: cdk.Duration.days(1),
-      visibilityTimeout: cdk.Duration.minutes(10),
+      visibilityTimeout: cdk.Duration.minutes(1),
     });
 
     return txnlSqsQueue;
@@ -138,7 +142,7 @@ export class ServerlessNotificationServiceStack extends Stack {
       handler: 'index.handler',
       code: lambda.Code.fromAsset('./resources/lambdas/transactional'),
       memorySize: 128,
-      timeout: cdk.Duration.seconds(10),
+      timeout: cdk.Duration.seconds(15),
     });
 
     return lambdaObj;
@@ -150,7 +154,7 @@ export class ServerlessNotificationServiceStack extends Stack {
       handler: 'index.handler',
       code: lambda.Code.fromAsset('./resources/lambdas/promotional'),
       memorySize: 128,
-      timeout: cdk.Duration.seconds(10),
+      timeout: cdk.Duration.seconds(70),
     });
 
     return lambdaObj;
