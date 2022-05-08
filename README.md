@@ -46,7 +46,29 @@ You can set your environment variable in [cdk.context.json](https://docs.aws.ama
 
 # Rest Endpoints and payload
 
+Refer RouterLbdFunctionURL in Cfn output section . By changing application code in resources folder you can customize your payload if needed
+
+| Method |      Function URL | Payload                                                                                                                                                                                                             |
+| -----: | ----------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|   POST |   {yourfnURL}/sms | { "message":"Your message", "mobileNos":["xxxxxxx"], "type":"PROMOTIONAL" }                                                                                                                                         |
+|   POST | {yourfnURL}/email | { "htmlMailBody":"Welcome to email testing", "subject":"Test Subject", "type":"TRANSACTIONAL", "toEmailIds":["xxxxx"], "ccEmailIds":["xxxx"], "attachments":[ "content":"'base64content", "fileName":"image.jpg" ]} |
+
 # Message retrial configuration
+
+- Message can be of two types TRANSACTIONAL or PROMOTIONAL
+- TRANSACTIONAL
+
+  - Messages of this type are delivered within seconds
+  - They are retried every 15 sec until retention period (3 min) expires or message is being deleted
+  - They are poped as soon as they are avaliable in queue
+
+- PROMOTIONAL
+
+  - Messages of this type are delivered in few minutes
+  - They are retried every 5 min until retention period expired or message is being deleted
+  - They are processed in batches of 10 and batchWindow of 1min
+
+- Message are auto delete from queue if lambda return success
 
 # Future enhancements
 

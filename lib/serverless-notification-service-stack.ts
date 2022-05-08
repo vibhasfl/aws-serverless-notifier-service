@@ -135,8 +135,8 @@ export class ServerlessNotificationServiceStack extends Stack {
     const txnlSqsQueue = new sqs.Queue(this, 'txnlqueue', {
       fifo: true,
       queueName: `${this.projectName}-txnl-${this.deploymentStage}.fifo`,
-      retentionPeriod: cdk.Duration.minutes(5),
-      visibilityTimeout: cdk.Duration.seconds(60),
+      retentionPeriod: cdk.Duration.minutes(3),
+      visibilityTimeout: cdk.Duration.seconds(15),
       contentBasedDeduplication: true,
     });
 
@@ -147,7 +147,7 @@ export class ServerlessNotificationServiceStack extends Stack {
     const txnlSqsQueue = new sqs.Queue(this, 'prmtlqueue', {
       queueName: `${this.projectName}-prmtl-${this.deploymentStage}`,
       retentionPeriod: cdk.Duration.days(1),
-      visibilityTimeout: cdk.Duration.minutes(3),
+      visibilityTimeout: cdk.Duration.minutes(5),
     });
 
     return txnlSqsQueue;
