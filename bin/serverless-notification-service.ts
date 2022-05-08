@@ -5,19 +5,37 @@ import { ServerlessNotificationServiceStack } from '../lib/serverless-notificati
 import { Tags } from 'aws-cdk-lib';
 
 const app = new cdk.App();
+const projectName =
+  process.env.PROJECT_NAME || app.node.tryGetContext('projectName');
+
+const stage = process.env.DEPLOYMENT_ENV || app.node.tryGetContext('stage');
+
+const region =
+  process.env.DEPLOYMENT_REGION || app.node.tryGetContext('region');
+
+if (!projectName) {
+  console.error('Project name is not defined');
+}
+
+if (!stage) {
+  console.error('Deployment stage not defined');
+}
+
+if (!region) {
+  console.error('Deployment region not defined');
+}
+
 const myStack = new ServerlessNotificationServiceStack(
   app,
-  `notifier-${process.env.DEPLOYMENT_ENV}`,
+  `${projectName}-${stage}`,
   {
-    stackName: `notifier-${process.env.DEPLOYMENT_ENV}`,
-    projectName: `notifier`,
-    deploymentStage: `${process.env.DEPLOYMENT_ENV}`,
+    stackName: `${projectName}-${stage}`,
     description: `Serverless Notification stack to send SMS/EMAIL`,
     env: {
-      region: `${process.env.DEPLOYMENT_REGION}`,
+      region: `${region}`,
     },
   }
 );
 
-Tags.of(myStack).add('billingCode', `notifier`);
-Tags.of(myStack).add('environment', `${process.env.DEPLOYMENT_ENV}`);
+Tags.of(myStack).add('billingCode', `${projectName}`);
+Tags.of(myStack).add('environment', `${stage}`);

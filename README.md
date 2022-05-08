@@ -39,4 +39,15 @@ To satisfy all dependencies of this project including tools like typescript comp
 
 ## Passing environment variables for deployment
 
+You can set your environment variable in [cdk.context.json](https://docs.aws.amazon.com/cdk/v2/guide/context.html#context_construct) OR pass directly from command line
+
+`PROJECT_NAME=notifier DEPLOYMENT_REGION=ap-south-1 DEPLOYMENT_ENV=dev cdk deploy`
 `DEPLOYMENT_REGION=ap-south-1 DEPLOYMENT_ENV=dev cdk deploy`
+
+# Rest Endpoints and payload
+
+# Message retrial configuration
+
+# Future enhancements
+
+# Testing Lambdas

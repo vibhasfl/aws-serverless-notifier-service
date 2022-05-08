@@ -1,7 +1,7 @@
-interface CustomStackProps extends StackProps {
-  projectName: String;
-  deploymentStage: String;
-}
+// interface CustomStackProps extends StackProps {
+//   projectName: String;
+//   deploymentStage: String;
+// }
 
 import { Stack, StackProps, CfnOutput } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -14,14 +14,14 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
 
 export class ServerlessNotificationServiceStack extends Stack {
-  public projectName: any;
-  public deploymentStage: any;
+  public projectName: string;
+  public deploymentStage: string;
 
-  constructor(scope: Construct, id: string, props?: CustomStackProps) {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    this.projectName = props?.projectName;
-    this.deploymentStage = props?.deploymentStage;
+    this.projectName = this.node.tryGetContext('projectName');
+    this.deploymentStage = this.node.tryGetContext('stage');
 
     const routerLambdaFn = this.createRouterLambdaFn();
     const txnlSqsQueue = this.createTxnlSqsQueue();
