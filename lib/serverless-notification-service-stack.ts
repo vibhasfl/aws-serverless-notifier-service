@@ -181,6 +181,7 @@ export class ServerlessNotificationServiceStack extends Stack {
     let s3Bucket = new s3.Bucket(this, 'emailers3', {
       publicReadAccess: false,
       encryption: s3.BucketEncryption.S3_MANAGED,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       // bucketName: `${this.projectName}-emailer-${this.deploymentStage}`,
     });
 
