@@ -2,6 +2,8 @@
 
 This AWS Cloudformation stack can serve as your notifier stack to send SMS and EMAIL. Since its serverless it can scale out/in when needed without any manual configuration.
 
+![AWS Serverless Notification service architecure diagram](sls-notifer.png)
+
 # Getting Started
 
 Install cdk
@@ -69,6 +71,7 @@ You can set your environment variable in [cdk.context.json](https://docs.aws.ama
 # Future enhancements
 
 - This stack is using AWS [Lambda function URL](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) to generate REST API endpoint but if you need advance features like realtime limit tracking,advance throttling,caching,websockets etc we can use [API Gateway](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html) instead.
+- Env driven retrial configuration
 
 # Testing Lambdas
 
