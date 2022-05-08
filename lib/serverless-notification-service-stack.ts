@@ -109,7 +109,7 @@ export class ServerlessNotificationServiceStack extends Stack {
 
   createRouterLambdaFn(): lambda.Function {
     const lambdaObj = new lambda.Function(this, `router`, {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset('./resources/lambdas/router'),
       memorySize: 128,
