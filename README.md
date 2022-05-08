@@ -1,17 +1,6 @@
-# Welcome to your CDK TypeScript project
+# Serverless Notification service
 
-This is a blank project for CDK development with TypeScript.
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
-
-## Useful commands
-
-- `npm run build` compile typescript to js
-- `npm run watch` watch for changes and compile
-- `npm run test` perform the jest unit tests
-- `cdk deploy` deploy this stack to your default AWS account/region
-- `cdk diff` compare deployed stack with current state
-- `cdk synth` emits the synthesized CloudFormation template
+This AWS Cloudformation stack can serve as your notifier stack to send SMS and EMAIL. Since its serverless it can scale out/in when needed without any manual configuration.
 
 # Getting Started
 
@@ -46,12 +35,19 @@ You can set your environment variable in [cdk.context.json](https://docs.aws.ama
 
 # Rest Endpoints and payload
 
-Refer RouterLbdFunctionURL in Cfn output section . By changing application code in resources folder you can customize your payload if needed
+| Method |  Function URL | Payload                                                                                                                                                                                                             |
+| -----: | ------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|   POST |   {fnURL}/sms | { "message":"Your message", "mobileNos":["xxxxxxx"], "type":"PROMOTIONAL" }                                                                                                                                         |
+|   POST | {fnURL}/email | { "htmlMailBody":"Welcome to email testing", "subject":"Test Subject", "type":"TRANSACTIONAL", "toEmailIds":["xxxxx"], "ccEmailIds":["xxxx"], "attachments":[ "content":"'base64content", "fileName":"image.jpg" ]} |
 
-| Method |      Function URL | Payload                                                                                                                                                                                                             |
-| -----: | ----------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|   POST |   {yourfnURL}/sms | { "message":"Your message", "mobileNos":["xxxxxxx"], "type":"PROMOTIONAL" }                                                                                                                                         |
-|   POST | {yourfnURL}/email | { "htmlMailBody":"Welcome to email testing", "subject":"Test Subject", "type":"TRANSACTIONAL", "toEmailIds":["xxxxx"], "ccEmailIds":["xxxx"], "attachments":[ "content":"'base64content", "fileName":"image.jpg" ]} |
+- Refer RouterLbdFunctionURL in Cfn output section for fnURL
+- By changing application code in resources folder you can customize your payload if needed
+- Make sure caller has appropiate IAM permission to call api endpoint. [Ref](https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html)
+
+# Customization
+
+- Function defination to send SMS/EMAIL is commented so that one can write their own implementation.
+- Check index.js files in resources/promotional and resources/transactional folders
 
 # Message retrial configuration
 
@@ -72,4 +68,18 @@ Refer RouterLbdFunctionURL in Cfn output section . By changing application code 
 
 # Future enhancements
 
+- This stack is using AWS [Lambda function URL](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) to generate REST API endpoint but if you need advance features like realtime limit tracking,advance throttling,caching,websockets etc we can use [API Gateway](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html) instead.
+
 # Testing Lambdas
+
+- In order to test lambda locally make sure you have docker and [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) cli installed
+- Ref: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-cdk-testing.html
+
+# Useful cdk commands
+
+- `npm run build` compile typescript to js
+- `npm run watch` watch for changes and compile
+- `npm run test` perform the jest unit tests
+- `cdk deploy` deploy this stack to your default AWS account/region
+- `cdk diff` compare deployed stack with current state
+- `cdk synth` emits the synthesized CloudFormation template
