@@ -33,7 +33,6 @@ To satisfy all dependencies of this project including tools like typescript comp
 You can set your environment variable in [cdk.context.json](https://docs.aws.amazon.com/cdk/v2/guide/context.html#context_construct) OR pass directly from command line
 
 `PROJECT_NAME=notifier DEPLOYMENT_REGION=ap-south-1 DEPLOYMENT_ENV=dev cdk deploy`
-`DEPLOYMENT_REGION=ap-south-1 DEPLOYMENT_ENV=dev cdk deploy`
 
 # Rest Endpoints and payload
 
@@ -72,6 +71,7 @@ You can set your environment variable in [cdk.context.json](https://docs.aws.ama
 
 - This stack is using AWS [Lambda function URL](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) to generate REST API endpoint but if you need advance features like realtime limit tracking,advance throttling,caching,websockets etc we can use [API Gateway](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html) instead.
 - Env driven retrial configuration
+- Upload to S3 when msg size is greater than 256KB
 
 # Testing Lambdas
 
