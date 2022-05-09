@@ -4,6 +4,15 @@ This AWS Cloudformation stack can serve as your notifier stack to send SMS and E
 
 ![AWS Serverless Notification service architecure diagram](sls-notifer.png)
 
+# Features
+
+- Serverless so nothing to manage, its scalable, more flexible and quick to release with pay as you go model.
+- Auto retrial in case of failures
+- Can handle email of any size . This depends on your mail server limit. Eg: AWS SES allows 10MB max.
+- Transactional type can be used for quick delivery of messages within seconds
+- Promotional type can be used for sending promotional or delayed communication
+- One can add its own implementation or vendor lib to send SMS/EMAIL
+
 # Getting Started
 
 Install cdk
@@ -33,6 +42,10 @@ To satisfy all dependencies of this project including tools like typescript comp
 You can set your environment variable in [cdk.context.json](https://docs.aws.amazon.com/cdk/v2/guide/context.html#context_construct) OR pass directly from command line
 
 `PROJECT_NAME=notifier DEPLOYMENT_REGION=ap-south-1 DEPLOYMENT_ENV=dev cdk deploy`
+
+## Security
+
+For demo purpose current AuthType for Router lambda function URL is set to NONE but in production you should set it to AWS_IAM and make sure caller has `lambda:InvokeFunctionUrl` permission. [Ref](https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html)
 
 # Rest Endpoints and payload
 
