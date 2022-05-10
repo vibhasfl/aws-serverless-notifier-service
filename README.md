@@ -13,6 +13,7 @@ This AWS Cloudformation stack can serve as your notifier stack to send SMS and E
 - Promotional type can be used for sending promotional or delayed communication
 - One can add its own implementation or vendor lib to send SMS/EMAIL
 - Using [aws cdk](https://docs.aws.amazon.com/cdk/v2/guide/home.html) for defining cloud infrastructure as code a.k.a [IAC](https://docs.aws.amazon.com/whitepapers/latest/introduction-devops-aws/infrastructure-as-code.html) so your infra too is version controlled as part of your application repository along with other [benefits](https://techcommunity.microsoft.com/t5/fasttrack-for-azure/the-benefits-of-infrastructure-as-code/ba-p/2069350).
+- Each request is logged into CW for future analysis and debugging
 
 # Getting Started
 
