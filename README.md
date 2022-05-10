@@ -6,12 +6,13 @@ This AWS Cloudformation stack can serve as your notifier stack to send SMS and E
 
 # Features
 
-- Serverless so nothing to manage, its scalable, more flexible and quick to release with pay as you go model.
+- [Serverless](https://aws.amazon.com/serverless/) so nothing to manage, its scalable, more flexible and quick to release with pay as you go model.
 - Auto retrial in case of failures
 - Can handle email of any size . This depends on your mail server limit. Eg: AWS SES allows 10MB max.
 - Transactional type can be used for quick delivery of messages within seconds
 - Promotional type can be used for sending promotional or delayed communication
 - One can add its own implementation or vendor lib to send SMS/EMAIL
+- Using [aws cdk](https://docs.aws.amazon.com/cdk/v2/guide/home.html) for defining cloud infrastructure as code a.k.a [IAC](https://docs.aws.amazon.com/whitepapers/latest/introduction-devops-aws/infrastructure-as-code.html) so your infra too is version controlled as part of your application repository along with other [benefits](https://techcommunity.microsoft.com/t5/fasttrack-for-azure/the-benefits-of-infrastructure-as-code/ba-p/2069350).
 
 # Getting Started
 
