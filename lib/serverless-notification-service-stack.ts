@@ -138,6 +138,7 @@ export class ServerlessNotificationServiceStack extends Stack {
       retentionPeriod: cdk.Duration.minutes(3),
       visibilityTimeout: cdk.Duration.seconds(15),
       contentBasedDeduplication: true,
+      encryption: sqs.QueueEncryption.KMS_MANAGED,
     });
 
     return txnlSqsQueue;
@@ -148,6 +149,7 @@ export class ServerlessNotificationServiceStack extends Stack {
       queueName: `${this.projectName}-prmtl-${this.deploymentStage}`,
       retentionPeriod: cdk.Duration.days(1),
       visibilityTimeout: cdk.Duration.minutes(5),
+      encryption: sqs.QueueEncryption.KMS_MANAGED,
     });
 
     return txnlSqsQueue;
